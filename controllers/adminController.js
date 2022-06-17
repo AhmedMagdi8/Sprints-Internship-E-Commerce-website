@@ -6,9 +6,22 @@ const User = require("../models/userModel");
 exports.getProfile = (req, res, next) => {
   res.status(200).render("profile", {
     userLoggedIn: req.session.user,
-    pageTitle: "Add Product",
+    pageTitle: "Profile",
   });
 };
+
+
+exports.getUserProfile = async (req, res, next) => {
+    const userId = req.query.userId;
+    console.log(userId,"..............................................................");
+    const user = await User.findOne(userId);
+    console.log(user);
+    res.status(200).render("userProfile", {
+      userLoggedIn: req.session.user,
+      user: user.dataValues,
+      pageTitle: "User Profile",
+    });
+  };
 
 
 exports.postProfile = async (req, res, next) => {

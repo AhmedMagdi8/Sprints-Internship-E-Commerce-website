@@ -63,13 +63,16 @@
 				
 				<!-- Search product -->
 				<div class="dis-none panel-search w-full p-t-10 p-b-15">
-					<div class="bor8 dis-flex p-l-15">
-						<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-							<i class="zmdi zmdi-search"></i>
-						</button>
-
-						<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search">
-					</div>	
+					<form action="/" method="POST" class="bor8 dis-flex p-l-15">
+                            
+                            <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="searchTerm" placeholder="Search">
+                            <button  type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+                                <i class="zmdi zmdi-search"></i>
+                            </button>                        
+                            <a href="/" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
+                                X
+                            </a>
+					</form>	
 				</div>
 
 			</div>
@@ -101,6 +104,7 @@
                                     </div>
 
                                     <div class="block2-txt-child2 flex-r p-t-3">
+                                    <% if(!userLoggedIn.isAdmin) { %>
                                     <form action="/cart" method="post">
 
                                         <div class="wrap-num-product flex-w m-r-20 m-tb-10">
@@ -120,6 +124,7 @@
                                         </button>
                                         <input type="hidden" name="productId" value="<%= product.id %>">
                                     </form>
+                                    <% } %>
                                     </div>
                                 </div>
 

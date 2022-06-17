@@ -175,7 +175,7 @@ exports.postOrders = (req, res, next) => {
   
   exports.getOrders = (req, res, next) => {
     if(req.session.user.isAdmin) {
-        Order.findAll({include: ['products']})
+        Order.findAll({include: ['products', 'user']})
         .then(orders => {
             res.render('orders', {
                 path: '/orders',

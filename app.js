@@ -5,6 +5,7 @@ const session = require('express-session');
 
 
 const sequelize = require("./database");
+const Op = require("sequelize").Op;
 
 // routes imports
 const authRoutes = require("./routes/authRoutes");
@@ -25,7 +26,7 @@ app.use(session({
 // routes used
 app.use("/", authRoutes);
 app.use(shopRoutes);
-app.use("/admin", adminRoutes);
+app.use("/user", adminRoutes);
 app.use("/uploads", uploadRoutes);
 
 
@@ -58,7 +59,7 @@ Order.belongsTo(User);
 Order.belongsToMany(Product, {through: OrderItem});
 
 
-app.use("/", async (req, res, next) => {
+app.get("/", async (req, res, next) => {
 
     try {
         const products = await Product.findAll();
@@ -72,6 +73,27 @@ app.use("/", async (req, res, next) => {
         console.log(e);
     }
 });
+
+app.post("/", async(req, res, next) => {
+    try {
+        const searchTerm = req.body.searchTerm;
+        const searchObj = { where: {
+            name: {
+              [Op.like]: `%${searchTerm}%`
+            }
+          }
+        }
+        const products = await Product.findAll(searchObj);
+        const payload = {
+            pageTitle:'Home',
+            userLoggedIn: req.session.user,
+            products: products
+        }
+        res.status(200).render("home", payload);
+    } catch(e) {
+        console.log(e);
+    }
+} )
 app.use(errorController.get404);
 
 

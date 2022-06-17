@@ -7,7 +7,13 @@
     <% if(orders.length > 0) { %>
         <% for (let order of orders) { %>
             <table class="table-shopping-cart">
-                    <h1 style="margin-top: 30px; margin-bottom:10px">Order <%= order.dataValues.id %> </h1>
+                    <h1 style="margin-top: 30px; margin-bottom:10px">
+                        Order <%= order.dataValues.id %> By 
+                        <a href="user/<%= order.user.id %>">
+                            <%= order.user.firstName %> <%= order.user.lastName %> 
+                        </a>
+                        at <%= order.createdAt.toDateString() %>
+                    </h1>
                     <tr class="table_head">
                         <th class="column-1">ID</th>
                         <th class="column-2">product</th>
@@ -20,7 +26,7 @@
                             <td class="column-1">
                                 <%= order.dataValues.id %>
                             </td>
-                            <td class="column-2"><%= product.name %></td>
+                            <td class="column-2"><a href="products/<%= product.id %>"><%= product.name %></a></td>
                             <td class="column-3">
                                 <%= product.orderItem.quantity %>
                             </td>
