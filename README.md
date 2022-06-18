@@ -8,14 +8,14 @@ npm install
 ```
 
 ## Environment Variables (.env)
-DATABASE_USER
-DATABASE_PASSWORD
-DBNAME
-SESSION_SECRET
-PEPPER
-SALT_ROUNDS
-PORT
-
+DATABASE_USER <br />
+DATABASE_PASSWORD <br />
+DBNAME <br />
+SESSION_SECRET <br />
+PEPPER <br />
+SALT_ROUNDS <br />
+PORT <br />
+STRIPE_SECRET_KEY <br />
 ## How to Run
 
 ```bash
