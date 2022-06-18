@@ -104,7 +104,7 @@
                                     </div>
 
                                     <div class="block2-txt-child2 flex-r p-t-3">
-                                    <% if(!userLoggedIn.isAdmin) { %>
+                                    <% if(userLoggedIn && !userLoggedIn.isAdmin) { %>
                                     <form action="/cart" method="post">
 
                                         <div class="wrap-num-product flex-w m-r-20 m-tb-10">

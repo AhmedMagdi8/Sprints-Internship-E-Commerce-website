@@ -12,7 +12,8 @@ router.post("/addProduct", authMiddleware.authAdmin, upload.single('imageUploade
 router.get("/cart", authMiddleware.authUser, shopController.getCart);
 router.post("/cart", authMiddleware.authUser, shopController.postCart);
 router.get("/orders", authMiddleware.auth, shopController.getOrders);
-router.post("/orders", authMiddleware.authUser,shopController.postOrders);
+router.get("/pay", authMiddleware.authUser,shopController.postOrder);
 router.get("/products/:productId", shopController.getProduct);
+router.get("/checkout/success", authMiddleware.authUser, shopController.postOrder);
 
 module.exports = router

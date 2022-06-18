@@ -8,10 +8,13 @@
         <% for (let order of orders) { %>
             <table class="table-shopping-cart">
                     <h1 style="margin-top: 30px; margin-bottom:10px">
-                        Order <%= order.dataValues.id %> By 
+                        Order 
+                        <% if(userLoggedIn.isAdmin) { %>
+                        By 
                         <a href="user/<%= order.user.id %>">
                             <%= order.user.firstName %> <%= order.user.lastName %> 
                         </a>
+                        <% } %>
                         at <%= order.createdAt.toDateString() %>
                     </h1>
                     <tr class="table_head">

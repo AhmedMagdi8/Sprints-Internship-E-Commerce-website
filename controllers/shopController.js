@@ -4,6 +4,8 @@ const Product = require("../models/productModel");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
+const Stripe = require('stripe');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 exports.getAddProduct = (req, res, next) => {
   res.status(200).render("addProduct", {
@@ -29,7 +31,7 @@ exports.postAddProduct = (req, res, next) => {
 
 
     fs.rename(tempPath, targetPath, async (err) => {
-        // name file found in the temppath with the targetpath
+        // name file found in the temp path with the target path
       if (err) {
         console.log(err);
         return res.sendStatus(400);
@@ -56,64 +58,82 @@ exports.postAddProduct = (req, res, next) => {
 };
 
 
+exports.getCart = async (req, res, next) => {
+    let total=0;
+    let products_=[];
 
-exports.getCart = (req, res, next) => {
-    console.log(req.session.user);
-    Cart.findOne({
-        where: { userId: req.session.user.id }
-    })
-    .then((cart) =>{
-        return cart.getProducts()
-        .then(products => {
-            console.log(products[0]);
+    try {   
+        const cart = await Cart.findOne({ where: { userId: req.session.user.id }});
+        const products = await cart.getProducts();
+        products_ = products;
+        products_.forEach(p => {
+            total += p.cartItem.dataValues.quantity  * p.price;
+        });
+        if(products_.length == 0) {
+            return res.render('cart', {
+                userLoggedIn:req.session.user,
+                pageTitle: 'Cart',
+                products: products_,
+                total: total,
+                sessionId: ""
+            })
+        } else {
+            const session = await stripe.checkout.sessions.create({
+                line_items: products.map(p => {
+                    return {
+                        name: p.name,
+                        description: p.description,
+                        amount: p.price * 100,
+                        currency:'usd',
+                        quantity: p.cartItem.dataValues.quantity
+                    }
+                }),
+                payment_method_types: ['card'],
+                success_url: req.protocol + '://' + req.get('host') + '/checkout/success',
+                cancel_url:  req.protocol + '://' + req.get('host') + '/cart',
+            });
             res.render('cart', {
                 userLoggedIn:req.session.user,
-                path: '/cart',
                 pageTitle: 'Cart',
-                products: products
+                products: products_,
+                total: total,
+                sessionId: session.id
             });
-        })
-        .catch((error) => console.log(error));
-    }).catch(err => console.log(err));
+        }
 
-    // res.status(200).render("cart", {
-    //   userLoggedIn: req.session.user,
-    //   pageTitle: "Cart",
-    // });
-  };
+    } catch(e) {
+        console.log(e);
+    }
 
+}
 
-  exports.postCart = (req, res, next) => {
+    
+
+  exports.postCart = async (req, res, next) => {
     const prodId = req.body.productId;
-    let qty = req.body.numProduct;
+    let qty = Number(req.body.numProduct);
     let fetchedCart;
 
-    Cart.findOne({ where: {userId: req.session.user.id}})
-    .then(cart => {
+    try {
+        const cart = await Cart.findOne({ where: {userId: req.session.user.id}});
         fetchedCart = cart;
-        return cart.getProducts({ where:{id: prodId}});
-    })
-    .then(products => {
+        const products =  await cart.getProducts({ where:{id: prodId}});
         let product;
         if(products.length > 0) {
             product = products[0];
+            if(product) {
+                const oldQuantity = Number(product.cartItem.quantity);
+                qty = oldQuantity + qty;
+            }
+
+        } else {
+            product = await Product.findByPk(prodId);
         }
-        if(product) {
-            const oldQuantity = product.cartItem.quantity;
-            qty = oldQuantity + qty;
-            return product;
-        }
-        return Product.findByPk(prodId);
-    })
-    .then(product => {
-        return fetchedCart.addProduct(product,
-            { through : { quantity: qty}
-        });
-    })
-    .then(() => {
-        res.redirect('/cart')
-    })
-    .catch(err => console.log(err));
+        await fetchedCart.addProduct(product, { through: { quantity: qty }});
+        res.redirect("/cart");
+    } catch(e) {
+        console.log(e)
+    }
 };
 
 
@@ -135,71 +155,64 @@ exports.getProduct = async (req, res, next) => {
 }
 
 
-exports.postOrders = (req, res, next) => {
+exports.postOrder = async (req, res, next) => {
     let fetchedCart;
-    Cart.findOne({
-        where: { userId: req.session.user.id }
-    })
-      .then(cart => {
+    try {
+        const cart = await Cart.findOne({
+            where: { userId: req.session.user.id }
+        });
+    
         fetchedCart = cart;
-        return cart.getProducts();
-      })
-      .then(products => {
-        User.findByPk(req.session.user.id)
-        .then(user => {
-            return user.createOrder()
-        })
-
-          .then(order => {
-            return order.addProducts(
-              products.map(product => {
+        const products = await cart.getProducts();
+        const user = await User.findByPk(req.session.user.id);
+        const order = await user.createOrder();
+        await order.addProducts(
+            products.map(product => {
                 product.orderItem = { quantity: product.cartItem.quantity };
                 return product;
-              })
-            );
-          })
-          .catch(err => console.log(err));
-      })
-      .then(result => {
-        return fetchedCart.setProducts(null);
-      })
-      .then(result => {
-        res.redirect('/orders');
-      })
-      .catch(err => {
-        console.log(err);
-        res.send(err);
+            })
+        );
+        await fetchedCart.setProducts(null);
+        res.redirect('/orders')
+    } catch(e) {
+        console.log(e);
+    }
+
         
-      });
   };
   
-  exports.getOrders = (req, res, next) => {
-    if(req.session.user.isAdmin) {
-        Order.findAll({include: ['products', 'user']})
-        .then(orders => {
+  exports.getOrders = async (req, res, next) => {
+
+    try {
+        if(req.session.user.isAdmin) {
+            const orders = await Order.findAll({
+                include: ['products', 'user'], 
+                order: [ ['createdAt', 'DESC'] ]
+            });
+    
             res.render('orders', {
                 path: '/orders',
                 pageTitle: 'Your Orders',
                 orders: orders,
                 userLoggedIn:req.session.user
-              });
-        })
-    } else {
-        User.findByPk(req.session.user.id)
-        .then(user => {
-            return user.getOrders({include: ['products']})
-        })
-        // Order.findAll({ where : {userId: req.session.user.id}},{include: ['products']})
-          .then(orders => {
-            // console.log(orders[0].products[0]);
-            res.render('orders', {
-              path: '/orders',
-              pageTitle: 'Your Orders',
-              orders: orders,
-              userLoggedIn:req.session.user
+                });
+        
+        } else {
+            const user = await User.findByPk(req.session.user.id);
+            const orders = await user.getOrders({
+                include: ['products', 'user'], 
+                order: [ ['createdAt', 'DESC'] ]
             });
-          })
-          .catch(err => console.log(err));
+            res.render('orders', {
+                path: '/orders',
+                pageTitle: 'Your Orders',
+                orders: orders,
+                userLoggedIn:req.session.user
+            });
+        }
+    } catch(e) {
+        console.log(e);
     }
+
 
   };

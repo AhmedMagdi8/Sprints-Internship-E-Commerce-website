@@ -54,7 +54,7 @@ exports.postProfile = async (req, res, next) => {
 
     res.status(200).render("profile", {
       userLoggedIn: req.session.user,
-      pageTitle: "Add Product",
+      pageTitle: "Profile",
     });
   };
   

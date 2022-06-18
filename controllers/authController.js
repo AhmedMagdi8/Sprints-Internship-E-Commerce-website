@@ -75,7 +75,6 @@ exports.postRegister = async (req, res, next) => {
         await newUser.save();
         await newUser.createCart();
             
-        console.log(11111111111);
         res.redirect("/login");
 
     } catch(e) {
