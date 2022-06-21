@@ -9,7 +9,6 @@ exports.getSupport = (req, res, next) => {
 }
 
 exports.postSupport = async (req, res, next) => {
-const userId = req.body.userId;
 const title = req.body.title;
 const description = req.body.description;
 const email = req.body.email;
@@ -17,7 +16,6 @@ const email = req.body.email;
 try {
     const ticket = new SupportTicket({
         title: title,
-        userId:userId,
         description:description,
         email:email
     });
