@@ -3356,3 +3356,7 @@ input::-webkit-inner-spin-button {
 input[type=textarea] {
     height: 100px;
 }
+
+textarea {
+    resize: none;
+  }

@@ -10,7 +10,7 @@ exports.getSupport = (req, res, next) => {
 
 exports.postSupport = async (req, res, next) => {
 const title = req.body.title;
-const description = req.body.description;
+const description = req.body.msg;
 const email = req.body.email;
 
 try {
@@ -35,7 +35,7 @@ exports.getSupportTickets = async (req, res, next) => {
 
     try {
         const tickets = await SupportTicket.findAll();
-        res.render("support", {
+        res.render("tickets", {
             pageTitle:"Support",
             tickets:tickets,
             userLoggedIn: req.session.user

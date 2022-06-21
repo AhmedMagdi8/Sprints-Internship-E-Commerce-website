@@ -1,0 +1,40 @@
+<%- include('./layouts/main-layout-header') %>
+
+
+	<!-- Content page -->
+	<section class="bg0 p-t-104 p-b-116">
+		<div class="container">
+			<div class="flex-w flex-tr">
+                <% if(tickets.length > 0) { %>
+                    <div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
+                            <%  tickets.forEach(t => {  %>
+                                
+                            <div class="bor8 m-b-20 how-pos4-parent">
+                                <div class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="email" readonly >
+                                    <%= t.email %>
+                                </div>
+                                <img class="how-pos4 pointer-none" src="/images/icons/icon-email.png" alt="ICON">
+                            </div>
+
+                            <div class="bor8 m-b-20 how-pos4-parent">
+                                <div class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="title" readonly >
+                                    <%= t.title %>
+                                </div>
+                                <img class="how-pos4 pointer-none" src="/images/icons/icon-email.png" alt="ICON">
+                            </div>
+
+                            <div class="bor8 m-b-30">
+                                <textarea class="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25" name="msg" readonly>
+                                    <%= t.description %>
+                                </textarea>
+                            </div>
+                            <br><br><br><br><br>
+                            <% }) %>
+                        </div>
+                <% } %>
+			</div>
+		</div>
+	</section>	
+	
+    
+<%- include('./layouts/main-layout-footer') %>

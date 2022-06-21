@@ -88,6 +88,9 @@
                                 <li class="active-menu">
                                     <a href="/cart">Cart</a>
                                 </li>
+                                <li>
+                                    <a href="/support">Contact</a>
+                                </li>
                             <% } %>
                             <% if(userLoggedIn && userLoggedIn.isAdmin) { %>
                                 <li>
@@ -96,15 +99,16 @@
                                 <li>
                                     <a href="/addCategory">Add Category</a>
                                 </li>
+                                <li>
+                                    <a href="/support/tickets">Support Tickets</a>
+                                </li>
                             <% } %>
                             <% if(userLoggedIn) { %>
 
                             <li>
                                 <a href="/Orders">Orders</a>
                             </li>
-                            <li>
-								<a href="/support">Contact</a>
-							</li>
+
                             <% } %>
 
 
