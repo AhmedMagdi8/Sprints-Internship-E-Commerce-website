@@ -2,8 +2,8 @@ const SupportTicket = require("../models/supportTicketModel");
 
 
 exports.getSupport = (req, res, next) => {
-    res.render("supprt", {
-        pageTitle:"Support",
+    res.render("support", {
+        pageTitle:"support",
         userLoggedIn: req.session.user
     });
 }
@@ -22,7 +22,7 @@ try {
         email:email
     });
     await ticket.save();
-    res.render("supprt", {
+    res.render("support", {
         pageTitle:"Support",
         userLoggedIn: req.session.user
     });
