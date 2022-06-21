@@ -20,17 +20,22 @@
                                 <input type="number" name="productPrice" value="" class="header-cart-item-txt p-t-8" required>
                             </h4>
     
-     
+                            <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+                                <label for="">Category</label>
+                                <% if(cats.length>0) { %>
+                                    <select class="example" name="catSelect">
+                                        <% cats.forEach(cat => { %>
+                                            <option name="<%= cat.title %>"><%= cat.title %></option>
+                                        <% }) %>
+                                    </select>                                
+                                <% } %>
+                            </h4>
 
                             <h4 class="mtext-105 cl2 js-name-detail p-b-14">
                                 <label for="">Stock</label>
                                 <input type="number" name="productStock" value="" class="header-cart-item-txt p-t-8" required>
                             </h4>
 
-                            <h4 class="mtext-105 cl2 js-name-detail p-b-14">
-                                <label for="">Coupon</label>
-                                <input type="text" name="productCoupon" value="" class="header-cart-item-txt p-t-8" required>
-                            </h4>
                             <!--  -->
                             <h4 class="mtext-105 cl2 js-name-detail p-b-14">
                                 <label for="">Description</label>
@@ -43,13 +48,6 @@
                                 </button>                            
                             </h4>
 
-
-                            <div class="p-t-33">
-
-                            </div>
-    
-                            <!--  -->
-                        <!-- </div> -->
 					</form>
 
 				</div>

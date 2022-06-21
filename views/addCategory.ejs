@@ -1,0 +1,35 @@
+<%- include('./layouts/main-layout-header') %>
+
+	<!-- Product Detail -->
+	<section class="sec-product-detail bg0 p-t-65 p-b-60">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-lg-7 p-b-30">
+					<form action="/addCategory" method="POST" class="addProductForm p-l-25 p-r-30 p-lr-0-lg">
+                        <h1>Add New Category</h1><br>
+                        <!-- <div class="p-r-50 p-t-5 p-lr-0-lg"> -->
+                            <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+                                <label for="">Name</label>
+                                <input type="text" name="catName" class="header-cart-item-txt p-t-8" required>
+                            </h4>
+    
+                            <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+                                <button type="submit" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
+                                    Add Category
+                                </button>                            
+                            </h4>
+
+					</form>
+
+				</div>
+					
+				<div class="col-md-6 col-lg-5 p-b-30">
+
+				</div>
+			</div>
+		</div>
+
+
+	</section>
+
+<%- include('./layouts/main-layout-footer') %>

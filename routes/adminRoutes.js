@@ -7,7 +7,6 @@ const router = express.Router();
 const adminController = require("../controllers/adminController");
 
 const authMiddleware = require('../authMiddleware');
-const { route } = require("./authRoutes");
 
 
 router.get("/profile", authMiddleware.auth, adminController.getProfile);

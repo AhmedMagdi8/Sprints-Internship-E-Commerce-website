@@ -11,6 +11,7 @@ const Op = require("sequelize").Op;
 const authRoutes = require("./routes/authRoutes");
 const shopRoutes = require("./routes/shopRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const supportRoutes = require('./routes/supportRoutes');
 const uploadRoutes = require("./routes/uploadRoutes");
 const errorController = require('./controllers/error');
 
@@ -28,7 +29,7 @@ app.use("/", authRoutes);
 app.use(shopRoutes);
 app.use("/user", adminRoutes);
 app.use("/uploads", uploadRoutes);
-
+app.use("/support",supportRoutes);
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -43,6 +44,8 @@ const Cart = require('./models/cartModel');
 const Order = require('./models/orderModel');
 const CartItem = require('./models/cartItemModel');
 const OrderItem = require('./models/orderItemModel');
+const Category = require('./models/categoryModel');
+const SupportTicket = require('./models/supportTicketModel');
 
 // define table relations
 
@@ -55,6 +58,12 @@ Cart.belongsToMany(Product, {through: CartItem});
 // one to many
 User.hasMany(Order);
 Order.belongsTo(User);
+// one to many
+Category.hasMany(Product);
+Product.belongsTo(Category);
+// one to many
+User.hasMany(SupportTicket);
+SupportTicket.belongsTo(User);
 // many to many
 Order.belongsToMany(Product, {through: OrderItem});
 
@@ -63,11 +72,36 @@ app.get("/", async (req, res, next) => {
 
     try {
         const products = await Product.findAll();
+        const categories = await Category.findAll();
         const payload = {
             pageTitle:'Home',
             userLoggedIn: req.session.user,
-            products: products
+            products: products,
+            categories:categories
         }
+        res.status(200).render("home", payload);
+    } catch(e) {
+        console.log(e);
+    }
+});
+
+app.get("/:query", async (req, res, next) => {
+
+    try {
+        const query = req.params.query;
+        const cat = await Category.findOne({ where: { title: query }});
+        // const obj = {};
+        // if(query)
+        //     obj.title = query;
+        const products = await Product.findAll({where: { categoryId: cat.id }});
+        const categories = await Category.findAll();
+        const payload = {
+            pageTitle:'Home',
+            userLoggedIn: req.session.user,
+            products: products,
+            categories:categories
+        }
+        // console.log(products);
         res.status(200).render("home", payload);
     } catch(e) {
         console.log(e);

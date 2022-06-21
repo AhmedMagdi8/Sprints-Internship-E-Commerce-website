@@ -4,13 +4,17 @@ const Product = require("../models/productModel");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
+const Category = require("../models/CategoryModel");
+
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-exports.getAddProduct = (req, res, next) => {
+exports.getAddProduct = async (req, res, next) => {
+  const cats = await Category.findAll();
   res.status(200).render("addProduct", {
     userLoggedIn: req.session.user,
     pageTitle: "Add Product",
+    cats:cats
   });
 };
 
@@ -18,39 +22,43 @@ exports.postAddProduct = (req, res, next) => {
   const name = req.body.productName;
   const price = req.body.productPrice;
   const description = req.body.productDescription;
-  const coupon = req.body.productCoupon;
-
+  const catSelect = req.body.catSelect;
+  //   const coupon = req.body.productCoupon;
+  
   try {
-    let filePath = `/uploads/${req.file.filename}.png`;
-    let tempPath = req.file.path;
-    let targetPath = path.join(__dirname, `../${filePath}`);
+      let filePath = `/uploads/${req.file.filename}.png`;
+      let tempPath = req.file.path;
+      let targetPath = path.join(__dirname, `../${filePath}`);
+      
+      // console.log(filePath);
+      // console.log(tempPath);
+      // console.log(targetPath);
+      
+      
+      fs.rename(tempPath, targetPath, async (err) => {
+          // name file found in the temp path with the target path
+            if (err) {
+              console.log(err);
+              return res.sendStatus(400);
+            } 
+            const cat = await Category.findOne({ where : {title: catSelect } });
+            const product = new Product({
+                name: name,
+                price: price,
+                description: description,
+                imageUrl:filePath,
+                categoryId:cat.id
+            });
+            await product.save();
 
-    // console.log(filePath);
-    // console.log(tempPath);
-    // console.log(targetPath);
+            const cats = await Category.findAll();
 
 
-    fs.rename(tempPath, targetPath, async (err) => {
-        // name file found in the temp path with the target path
-      if (err) {
-        console.log(err);
-        return res.sendStatus(400);
-      } 
-
-      const product = new Product({
-        name: name,
-        price: price,
-        description: description,
-        coupon: coupon,
-        imageUrl:filePath
-      });
-
-      await product.save();
-
-      res.status(200).render("addProduct", {
-        userLoggedIn: req.session.user,
-        pageTitle: "Add Product",
-      });
+            res.status(200).render("addProduct", {
+                userLoggedIn: req.session.user,
+                pageTitle: "Add Product",
+                cats:cats
+            });
     });
   } catch (err) {
     res.status(400).send("something went wrong");
@@ -177,8 +185,6 @@ exports.postOrder = async (req, res, next) => {
     } catch(e) {
         console.log(e);
     }
-
-        
   };
   
   exports.getOrders = async (req, res, next) => {
@@ -191,7 +197,6 @@ exports.postOrder = async (req, res, next) => {
             });
     
             res.render('orders', {
-                path: '/orders',
                 pageTitle: 'Your Orders',
                 orders: orders,
                 userLoggedIn:req.session.user
@@ -213,6 +218,26 @@ exports.postOrder = async (req, res, next) => {
     } catch(e) {
         console.log(e);
     }
+  };
 
+  exports.getAddCategory = (req, res, next) => {
 
+        res.render('addCategory', {
+            pageTitle: 'Add New Category',
+            userLoggedIn:req.session.user
+        });
+  };
+
+  exports.postAddCategory = async (req, res, next) => {
+   
+    try {
+        const catName = req.body.catName;
+        const newCat = new Category({
+            title: catName
+        });
+        await newCat.save();
+        res.redirect('/')
+    } catch(e) {
+        console.log(e);
+    }
   };

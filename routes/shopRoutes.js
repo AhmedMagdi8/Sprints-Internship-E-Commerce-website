@@ -15,5 +15,7 @@ router.get("/orders", authMiddleware.auth, shopController.getOrders);
 router.get("/pay", authMiddleware.authUser,shopController.postOrder);
 router.get("/products/:productId", shopController.getProduct);
 router.get("/checkout/success", authMiddleware.authUser, shopController.postOrder);
+router.get("/addCategory", authMiddleware.authAdmin, shopController.getAddCategory);
+router.post("/addCategory", authMiddleware.authAdmin, shopController.postAddCategory);
 
 module.exports = router
