@@ -24,7 +24,6 @@ exports.postLogin = async (req, res, next) => {
         const result = await bcrypt.compare(password + pepper, user.password);
         if (result) {
           req.session.user = user;
-        //   console.log(user.dataValues);
           return res.redirect("/");
         }
       }
@@ -44,7 +43,6 @@ exports.postRegister = async (req, res, next) => {
     const email = req.body.email;
     const password  = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    console.log();
     let isAdmin;
     if(req.body.isAdmin == "on")
         isAdmin = true;
@@ -78,7 +76,6 @@ exports.postRegister = async (req, res, next) => {
         res.redirect("/login");
 
     } catch(e) {
-        console.log(e);
         errorMessage = e.message;
         res.status(200).render("register", {
             errorMessage: errorMessage
@@ -94,7 +91,6 @@ exports.postRegister = async (req, res, next) => {
 
 exports.logout = (req, res, next) => {
     req.session.user = null;
-    // console.log(req.session.user);
     res.redirect("/login");
 }
 

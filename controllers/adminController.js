@@ -13,9 +13,7 @@ exports.getProfile = (req, res, next) => {
 
 exports.getUserProfile = async (req, res, next) => {
     const userId = req.query.userId;
-    console.log(userId,"..............................................................");
     const user = await User.findOne(userId);
-    console.log(user);
     res.status(200).render("userProfile", {
       userLoggedIn: req.session.user,
       user: user.dataValues,
@@ -31,11 +29,7 @@ exports.postProfile = async (req, res, next) => {
     const phoneNumber = req.body.phoneNumber;
     const newPassword = req.body.password;
 
-    // console.log(firstName);
-    // console.log(lastName);
-    // console.log(address);
-    // console.log(phoneNumber);
-    // console.log(newPassword);
+
     let hashedPassword;
     if (newPassword) {
         const pepper  = process.env.PEPPER;

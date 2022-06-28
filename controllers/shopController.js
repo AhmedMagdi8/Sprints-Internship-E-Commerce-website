@@ -30,10 +30,6 @@ exports.postAddProduct = (req, res, next) => {
       let tempPath = req.file.path;
       let targetPath = path.join(__dirname, `../${filePath}`);
       
-      // console.log(filePath);
-      // console.log(tempPath);
-      // console.log(targetPath);
-      
       
       fs.rename(tempPath, targetPath, async (err) => {
           // name file found in the temp path with the target path
@@ -158,7 +154,6 @@ exports.getProduct = async (req, res, next) => {
 
     } catch(e) {
         console.log(e);
-        res.sendStatus(500);
     }
 }
 
