@@ -1,6 +1,3 @@
-const path = require("path");
-const fs = require("fs");
-const Product = require("../models/productModel");
 const User = require("../models/userModel");
 
 exports.getProfile = (req, res, next) => {

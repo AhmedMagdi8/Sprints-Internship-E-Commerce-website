@@ -90,9 +90,7 @@ app.get("/:query", async (req, res, next) => {
     try {
         const query = req.params.query;
         const cat = await Category.findOne({ where: { title: query }});
-        // const obj = {};
-        // if(query)
-        //     obj.title = query;
+
         const products = await Product.findAll({where: { categoryId: cat.id }});
         const categories = await Category.findAll();
         const payload = {
@@ -101,7 +99,6 @@ app.get("/:query", async (req, res, next) => {
             products: products,
             categories:categories
         }
-        // console.log(products);
         res.status(200).render("home", payload);
     } catch(e) {
         console.log(e);
